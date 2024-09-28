@@ -2,12 +2,11 @@
 #include<string.h>
 #include<stdlib.h>
 
-int searchtable(char label[],int i) {
+int searchtable(char label[],char tablename[]) {
 	char symbol[10];
-	FILE *table;
-    i == 0 ? table = fopen("symtab.txt","r") : fopen("optab.txt","r");
+	FILE *table = fopen(tablename,"r");
 	int value;
-	while( fscanf(table,"%s %d",symbol,&value) != EOF) {
+	while( fscanf(table,"%s %X",symbol,&value) != EOF) {
 		if(strcmp(label,symbol)==0) {
 			fclose(table);
 			return 1;
@@ -32,33 +31,31 @@ void main() {
     symtab = fopen("symtab.txt", "w");
     fclose(symtab);
 	
-	if(!feof(input)) {
-		fscanf(input,"%s %s %s",label,opcode,operand);
-		if(!strcmp(opcode,"START")) {
+	if( fscanf(input,"%s %s %s",label,opcode,operand) != EOF ) {;
+		if(strcmp(opcode,"START") == 0) {
 			saddr = (int)strtol(operand,NULL,16);
-			locctr = (int)strtol(operand,NULL,16);
-			fprintf(output,"%04X %s %s %04s\n",locctr,label,opcode,operand);
+			locctr = saddr;
+			fprintf(output,"** %s %s %04X\n",label,opcode,saddr);
 		} else {
             rewind(input);
 			locctr = 0;
 			saddr = 0;
-            fprintf(output,"%04X %s %s %04X\n",locctr,"PRGM","START",locctr);
+            fprintf(output,"** %s %s %04X\n","PRGM","START",locctr);
 		}
 	}
 
-	while(!feof(input)) {
+	while( fscanf(input,"%s %s %s",label,opcode,operand) != EOF ) {
 
-		fscanf(input,"%s %s %s",label,opcode,operand);
         if(strcmp(opcode,"END")==0)
 			break;
 
         fprintf(output,"%04X %s %s %s\n",locctr,label,opcode,operand);
         
-        if(searchtable(label,0)==1) {
+        if(searchtable(label,"symtab.txt")==1) {
 				printf("symbol error\n");
 				exit(0);
 		} else {
-			if(searchtable(opcode,1)==1)
+			if(searchtable(opcode,"optab.txt")==1)
 				locctr+=3;
 			else if(strcmp(opcode,"WORD")==0) {
 				writesymtab(label,locctr);
@@ -82,7 +79,7 @@ void main() {
 			}
 		}
     }
-    fprintf(output,"%04X %s %s %s\n",locctr,label,opcode,"**");
+    fprintf(output,"%04X %s %s %s\n",locctr,label,opcode,operand);
 	printf("Program length = %04X\n",locctr-saddr);
 	length = fopen("length.txt","w");
 	fprintf(length,"%04X",locctr-saddr);
