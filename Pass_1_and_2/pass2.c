@@ -34,7 +34,7 @@ void writeobjcode(char objcode[],int length,char loc[]) {
 
 void main() {
 	int prgmlen,j,startaddr,opcode,labeladdr,i;
-	char loc[10],label[10],opword[10],operand[10],bytes[10],objcode[15]="";
+	char loc[10],label[10],opword[10],operand[10],objcode[15]="";
 	FILE *intermediate, *object, *length,*listing;
 	intermediate = fopen("intermediate.txt","r");
     length = fopen("length.txt","r");
