@@ -77,10 +77,9 @@ void main() {
     	}
 
 		else if (strcmp(opword,"BYTE")==0) {
-            strncpy(bytes, &operand[2], strlen(operand)-3);
-			for(i=0;bytes[i] != '\0';i++)
-				sprintf( &objcode[i * 2], "%02X", (unsigned char)bytes[i] );
-            objcode[i*2] = '\0';
+			for(i=2;operand[i] != '\'';i++)
+				sprintf( &objcode[(i-2) * 2], "%02X", (unsigned char)operand[i] );
+            objcode[(i-2)*2] = '\0';
             writeobjcode(objcode,i,loc);
             fprintf(listing,"%s %s %s %s\t\t%s\n",loc,label,opword,operand,objcode);
 		}
